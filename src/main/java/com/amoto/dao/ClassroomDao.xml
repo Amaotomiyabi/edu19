@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.amoto.dao.ClassroomDao">
+	<insert id="addCla" parameterType="classroom">
+		insert class_info
+		values(default,#{class_name},#{teacher.teacher_id})
+	</insert>
+	<delete id="deleteCla" parameterType="Integer">
+		delete from class_info
+		where class_id=#{claId}
+	</delete>
+	<update id="updateCla" parameterType="classroom">
+		update class_info set
+		class_name=#{class_name},class_teacher_id=#{teacher.teacher_id}
+		where 
+		class_id=#{class_id}
+	</update>
+	<select id="selectAllCla" resultMap="claTea">
+		select
+		a.class_id,a.class_name,b.* from
+		class_info a join
+		teacher_info b on a.class_teacher_id=b.teacher_id
+	</select>
+	<resultMap id="claTea" type="classroom">
+		<id property="class_id" column="class_id" />
+		<result property="class_name" column="class_name" />
+		<association property="teacher" javaType="teacher">
+			<id property="teacher_id" column="teacher_id" />
+			<result property="teacher_name" column="teacher_name" />
+			<result property="teacher_phone" column="teacher_phone" />
+		</association>
+	</resultMap>
+	<select id="findClaById" resultType="classroom"
+		parameterType="Integer">
+		select * from class_info where class_id=#{claId}
+	</select>
+	<select id="findClaByName" resultType="classroom"
+		parameterType="String">
+		select * from class_info where class_name like
+		'%${claName}%'
+	</select>
+	<select id="findClaOne" resultType="classroom"
+		parameterType="classroom">
+		select * from class_info where
+		<choose>
+			<when test="class_id!=null">class_id=#{class_id}</when>
+			<when test="class_name!=null">class_name like '%${class_name}%'</when>
+			<otherwise>
+				class_id=0
+			</otherwise>
+		</choose>
+	</select>
+	<select id="findClaByTea" resultType="classroom"
+		parameterType="Integer">
+		select * from class_info where class_teacher_id=#{teaId}
+	</select>
+	<insert id="addClaStu" parameterType="Integer">
+		insert class_stu_info
+		values(default,#{claId},#{stuId})
+	</insert>
+	<delete id="deleteClaStu" parameterType="Integer">
+		delete from
+		class_stu_info where class_class_stu_id=#{claId} and
+		stu_class_stu_id=#{stuId}
+	</delete>
+	<select id="findClaByStu" parameterType="Integer"
+		resultType="classroom">
+		select a.* from class_info a join class_stu_info b on
+		a.class_id=b.class_class_stu_id where b.stu_class_stu_id=#{stuId}
+	</select>
+	<select id="findClaByCur" parameterType="Integer"
+		resultType="classroom">
+		select a.* from class_info a join cur_class_info b on
+		a.class_id=b.class_cur_class_id where b.cur_cur_class_id=#{curId}
+	</select>
+	<delete id="deleteClaCur" parameterType="Integer">
+		delete from
+		cur_class_info where cur_cur_class_id=#{curTeaId} and
+		class_cur_class_id=#{claId}
+	</delete>
+	<insert id="addClaCur" parameterType="Integer">
+		insert cur_class_info
+		values(default,#{curTeaId},#{claId})
+	</insert>
+
+
+</mapper>

@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.amoto.dao.MarkTableDao">
+	<insert id="addMt" parameterType="markTable">
+		insert mark_table
+		values(default,#{course.cur_teacher_id},#{student.stu_id},#{m_mark},#{m_grade_point},
+		#{m_regular_grade},#{m_exam_mark},#{m_total_mark})
+	</insert>
+	<delete id="deleteMt" parameterType="Integer">
+		delete from mark_table where
+		mark_id=#{mtId}
+	</delete>
+	<update id="updateMt" parameterType="markTable">
+		update mark_table set
+		m_mark=#{m_mark},
+		m_grade_point=#{m_grade_point},m_regular_grade=#{m_regular_grade},m_exam_mark=#{m_exam_mark},m_total_mark=#{m_total_mark}
+		where mark_id=#{mark_id}
+	</update>
+	<select id="findMtByTeaId" resultMap="mtCS">
+		select
+		a.*,e.*,b.cur_teacher_info_id,c.*,d.* from (mark_table a join
+		((cur_teacher_info b join cur_info c on
+		b.cur_cur_teacher_id=c.cur_id)
+		join teacher_info d on
+		b.teacher_cur_teacher_id=d.teacher_id) on
+		a.cur_mark_id=b.cur_teacher_info_id) join stu_info e on
+		a.stu_mark_id=e.stu_id where d.teacher_id=#{teaId}
+	</select>
+
+	<select id="selectAllMt" resultMap="mtCS">
+		select
+		a.*,e.*,b.cur_teacher_info_id,c.*,d.* from (mark_table a join
+		((cur_teacher_info b join cur_info c on
+		b.cur_cur_teacher_id=c.cur_id)
+		join teacher_info d on
+		b.teacher_cur_teacher_id=d.teacher_id) on
+		a.cur_mark_id=b.cur_teacher_info_id) join stu_info e on
+		a.stu_mark_id=e.stu_id
+	</select>
+	<resultMap id="mtCS" type="markTable">
+		<id property="mark_id" column="mark_id" />
+		<result property="m_mark" column="m_mark" />
+		<result property="m_grade_point" column="m_grade_point" />
+		<result property="m_regular_grade" column="m_regular_grade" />
+		<result property="m_exam_mark" column="m_exam_mark" />
+		<result property="m_total_mark" column="m_total_mark" />
+		<association property="student" javaType="student">
+			<id property="stu_id" column="stu_id" />
+			<result property="stu_name" column="stu_name" />
+			<result property="stu_num" column="stu_num" />
+		</association>
+		<association property="course" javaType="course">
+			<id property="cur_teacher_id" column="cur_teacher_info_id" />
+			<result property="cur_name" column="cur_name" />
+			<result property="cur_mark" column="cur_mark" />
+			<result property="cur_grade_point" column="cur_grade_point" />
+			<result property="cur_regular_grade"
+				column="cur_regular_grade" />
+			<result property="cur_exam_mark" column="cur_exam_mark" />
+			<result property="cur_total_mark" column="cur_total_mark" />
+			<association property="teacher" javaType="teacher">
+				<id property="teacher_id" column="teacher_id" />
+				<result property="teacher_name" column="teacher_name" />
+				<result property="teacher_phone" column="teacher_phone" />
+			</association>
+		</association>
+	</resultMap>
+
+	<select id="findMtById" resultType="markTable"
+		parameterType="Integer">
+		select * from mark_table where mark_id=#{mtId}
+	</select>
+	<select id="findMtByStu" resultMap="mtCS"
+		parameterType="Integer">
+		select
+		a.*,e.*,b.cur_teacher_info_id,c.*,d.* from
+		(mark_table a join
+		((cur_teacher_info b join cur_info c on
+		b.cur_cur_teacher_id=c.cur_id)
+		join teacher_info d on
+		b.teacher_cur_teacher_id=d.teacher_id) on
+		a.cur_mark_id=b.cur_teacher_info_id) join stu_info e on
+		a.stu_mark_id=e.stu_id where a.stu_mark_id=#{stuId}
+	</select>
+	<select id="findMtByCur" resultType="markTable"
+		parameterType="Integer">
+		select * from mark_table where cur_mark_id=#{curId}
+	</select>
+
+
+
+
+
+
+
+
+
+
+
+
+</mapper>

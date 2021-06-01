@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.amoto.dao.StudentDao">
+	<insert id="addStu" parameterType="student"
+		statementType="CALLABLE">
+		{ call
+		insert_stu(#{stu_num},#{stu_name},#{stu_account},#{stu_password},#{per_level})}
+	</insert>
+	<insert id="addStuAll" parameterType="student"
+		statementType="CALLABLE">
+		{ call
+		insert_stu_all(#{stu_num},#{stu_name},#{stu_account},#{stu_password},#{per_level}
+		,#{stu_image},#{stu_birthday},#{stu_sex}
+		,#{stu_iden_num},#{stu_nation},#{stu_phone},#{stu_political_outlook},#{stu_major},#{stu_colleges},#{stu_addr})}
+	</insert>
+	<delete id="deleteStu" parameterType="Integer">
+		delete from stu_info where
+		stu_id=#{stuId}
+	</delete>
+	<update id="updateStu" parameterType="student"
+		statementType="CALLABLE">
+		{ call
+		update_stu_all(#{stu_id},#{stu_num},#{stu_name},#{stu_account},#{stu_password}
+		,#{stu_image},#{stu_birthday},#{stu_sex}
+		,#{stu_iden_num},#{stu_nation},#{stu_phone},#{stu_political_outlook},#{stu_major},#{stu_colleges},#{stu_addr})}
+	</update>
+	<update id="updateStuBasic" parameterType="student">
+		update stu_info set stu_password=#{stu_password} where stu_id=#{stu_id}
+	</update>
+	<select id="selectAllStu" resultType="student">
+		select
+		a.stu_id,a.stu_account,a.stu_password,a.per_level,a.stu_name,a.stu_num,
+		b.stu_image,
+		b.stu_birthday,
+		b.stu_sex,
+		b.stu_iden_num,
+		b.stu_nation,
+		b.stu_phone,
+		b.stu_political_outlook,
+		b.stu_major,
+		b.stu_colleges,
+		b.stu_addr from
+		stu_info a
+		join stu_school_roll b on a.stu_num=b.stu_num
+	</select>
+	<select id="selectAllStuBasicInfo" resultType="student">
+		select * from
+		stu_info;
+	</select>
+	<select id="findStuBasicById" resultType="student">
+		select * from stu_info
+		where stu_id=#{stuId}
+	</select>
+	<select id="findStuById" resultType="student"
+		parameterType="Integer">
+		select
+		a.stu_id,a.stu_account,a.stu_password,a.per_level,b.* from stu_info a
+		join stu_school_roll b on a.stu_num=b.stu_num where a.stu_id=#{stuId}
+	</select>
+	<select id="findStuByNum" resultType="student"
+		parameterType="String">
+		select
+		* from stu_info where
+		stu_num=#{stuNum}
+	</select>
+	<select id="findStuByName" resultType="student"
+		parameterType="String">
+		select
+		a.stu_id,a.stu_account,a.stu_password,a.per_level,b.* from stu_info a
+		join stu_school_roll b on a.stu_num=b.stu_num where
+		a.stu_name=#{stuName}
+	</select>
+	<select id="findStuByAccount" resultType="student"
+		parameterType="String">
+		select
+		a.stu_id,a.stu_account,a.stu_password,a.per_level,b.* from stu_info a
+		join stu_school_roll b on a.stu_num=b.stu_num where
+		a.stu_account=#{stuAccount}
+	</select>
+	<select id="findStuOne" resultType="student"
+		parameterType="student">
+		select a.stu_id,a.stu_account,a.stu_password,a.per_level,b.* from
+		stu_info a
+		join stu_school_roll b on a.stu_num=b.stu_num where
+		<choose>
+			<when test="stu_id!=null">
+				a.stu_id=#{stu_id}
+			</when>
+			<when test="stu_name!=null">
+				a.stu_name like '%${stu_name}%'
+			</when>
+			<when test="stu_num!=null">
+				a.stu_num=#{stu_num}
+			</when>
+			<when test="stu_account!=null">
+				a.stu_account=#{stu_account}
+			</when>
+			<otherwise>
+				a.stu_id=0
+			</otherwise>
+		</choose>
+	</select>
+	<select id="findStuByCla" resultType="student"
+		parameterType="Integer">
+		select
+		a.stu_id,a.stu_account,a.stu_password,a.per_level,b.* from (stu_info a
+		join stu_school_roll b on a.stu_num=b.stu_num) join class_stu_info c
+		on a.stu_id=c.stu_class_stu_id where c.class_class_stu_id=#{claId}
+	</select>
+	<select id="findStuByCur" resultType="student"
+		parameterType="Integer">
+		select a.* from stu_info a join cur_stu_info b on
+		a.stu_id=b.stu_cur_stu_id where b.cur_cur_stu_id=#{curTeaId}
+	</select>
+	<delete id="deleteStuCur" parameterType="Integer">
+		delete from cur_stu_info
+		where cur_cur_stu_id=#{curTeaId} and
+		stu_cur_stu_id=#{stuId}
+	</delete>
+	<insert id="addStuCur" parameterType="Integer">
+		insert cur_stu_info
+		values(default,#{curTeaId},#{stuId})
+	</insert>
+
+
+</mapper>

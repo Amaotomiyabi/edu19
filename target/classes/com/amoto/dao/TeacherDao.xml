@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.amoto.dao.TeacherDao">
+	<insert id="addTea" parameterType="teacher">
+		insert teacher_info
+		values(default,#{teacher_name},#{teacher_sex},#{teacher_phone}
+		,#{teacher_account},#{teacher_password},#{per_level})
+	</insert>
+	<delete id="deleteTea" parameterType="Integer">
+		delete from teacher_info
+		where teacher_id=#{teaId}
+	</delete>
+	<update id="updateTeaSome" parameterType="teacher">
+		update teacher_info set
+		teacher_name=#{teacher_name},teacher_sex=#{teacher_sex},teacher_phone=#{teacher_phone},teacher_password=#{teacher_password}
+		where teacher_id=#{teacher_id}
+	</update>
+
+	<update id="updateTea" parameterType="teacher">
+		update teacher_info set
+		teacher_name=#{teacher_name},teacher_sex=#{teacher_sex},teacher_phone=#{teacher_phone},
+		teacher_account=#{teacher_account},teacher_password=#{teacher_password}
+		where teacher_id=#{teacher_id}
+	</update>
+	<select id="selectAllTea" resultType="teacher">
+		select * from teacher_info
+	</select>
+	<select id="findTeaById" parameterType="Integer"
+		resultType="teacher">
+		select * from teacher_info where teacher_id=#{teaId}
+	</select>
+	<select id="findTeaByName" parameterType="String"
+		resultType="teacher">
+		select * from teacher_info where teacher_name like
+		'%${teaName}%'
+	</select>
+	<select id="findTeaOne" parameterType="teacher"
+		resultType="teacher">
+		select * from teacher_info where
+		<choose>
+			<when test="teacher_id!=null">
+				teacher_id=#{teacher_id}
+			</when>
+			<when test="teacher_name!=null">
+				teacher_name like '%${teacher_name}%'
+			</when>
+			<when test="teacher_account!=null">
+				teacher_account=#{teacher_account}
+			</when>
+			<otherwise>
+				teacher_id=0
+			</otherwise>
+		</choose>
+	</select>
+	<select id="findTeaByAccount" parameterType="String"
+		resultType="teacher">
+		select * from teacher_info where
+		teacher_account=#{teaAccount}
+	</select>
+	<select id="findTeaByCla" parameterType="Integer"
+		resultType="teacher">
+		select a.* from teacher_info a join class_info b on
+		a.teacher_id=b.class_teacher_id where b.class_id=#{claId}
+	</select>
+	<select id="findTeaByCur" parameterType="Integer"
+		resultType="teacher">
+		select a.*,b.cur_teacher_info_id from teacher_info a join
+		cur_teacher_info b on
+		a.teacher_id=b.teacher_cur_teacher_id where
+		b.cur_cur_teacher_id=#{curId}
+	</select>
+	<insert id="addCurTea" parameterType="Integer">
+		insert cur_teacher_info
+		values(default,#{curId},#{teaId})
+	</insert>
+	<delete id="deleteCurTea" parameterType="Integer">
+		delete from
+		cur_teacher_info where cur_cur_teacher_id=#{curId} and
+		teacher_cur_teacher_id=#{teaId}
+	</delete>
+	<update id="updateCurTea" parameterType="Integer">
+		update cur_teacher_info
+		set
+		cur_cur_teacher_id=#{curId},teacher_cur_teacher_id=#{teaId}
+	</update>
+
+
+
+
+</mapper>

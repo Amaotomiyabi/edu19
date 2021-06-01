@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.amoto.dao.CourseDao">
+	<insert id="addCur" parameterType="course">
+		insert cur_info
+		values(default,#{cur_name},#{cur_time},#{cur_mark},#{cur_grade_point},
+		#{cur_regular_grade},#{cur_exam_mark},#{cur_total_mark})
+	</insert>
+	<delete id="deleteCur" parameterType="Integer">
+		delete from cur_info where
+		cur_id=#{curId}
+	</delete>
+	<update id="updateCur" parameterType="course">
+		update cur_info set
+		cur_name=#{cur_name},cur_time=#{cur_time},cur_mark=#{cur_mark},cur_grade_point=#{cur_grade_point},cur_regular_grade=#{cur_regular_grade},
+		cur_exam_mark=#{cur_exam_mark},cur_total_mark=#{cur_total_mark}
+		where
+		cur_id=#{cur_id}
+	</update>
+	<select id="selectAllCur" resultType="course">
+		select * from cur_info
+	</select>
+	<select id="findCurById" resultType="course"
+		parameterType="Integer">
+		select * from cur_info where cur_id=#{curId}
+	</select>
+	<select id="findCurByName" parameterType="String"
+		resultType="course">
+		select * from cur_info where cur_name like '%${curName}%'
+	</select>
+	<select id="findCurOne" parameterType="course"
+		resultType="course">
+		select * from cur_info where
+		<choose>
+			<when test="cur_id!=null">
+				cur_id=#{cur_id}
+			</when>
+			<when test="cur_name!=null">
+				cur_name like '%${cur_name}%'
+			</when>
+			<otherwise>
+				cur_id=0
+			</otherwise>
+		</choose>
+	</select>
+	<select id="findCurByTea" parameterType="Integer"
+		resultMap="curTeaType">
+		select c.*,d.*,b.cur_teacher_info_id from (cur_teacher_info
+		b
+		join cur_info c on b.cur_cur_teacher_id=c.cur_id) join teacher_info d
+		on b.teacher_cur_teacher_id=d.teacher_id where d.teacher_id=#{teaId}
+	</select>
+	<select id="findCurByCla" parameterType="Integer"
+		resultMap="curTeaType">
+		select c.*,d.*,b.cur_teacher_info_id from ((cur_class_info
+		a
+		join cur_teacher_info b on a.cur_cur_class_id=b.cur_teacher_info_id)
+		join cur_info c on b.cur_cur_teacher_id=c.cur_id) join teacher_info d
+		on b.teacher_cur_teacher_id=d.teacher_id where
+		a.class_cur_class_id=#{claId}
+	</select>
+	<select id="findCurByStu" parameterType="Integer"
+		resultMap="curTeaType">
+		select c.*,d.*,b.cur_teacher_info_id from ((cur_stu_info a
+		join cur_teacher_info b on a.cur_cur_stu_id=b.cur_teacher_info_id)
+		join cur_info c on b.cur_cur_teacher_id=c.cur_id) join teacher_info d
+		on b.teacher_cur_teacher_id=d.teacher_id where
+		a.stu_cur_stu_id=#{stuId}
+	</select>
+	<select id="selectAllCurTea" resultMap="curTeaType">
+		select
+		a.*,b.*,c.cur_teacher_info_id from (cur_teacher_info c join cur_info a
+		on
+		c.cur_cur_teacher_id=a.cur_id) join teacher_info b on
+		c.teacher_cur_teacher_id=b.teacher_id
+	</select>
+	<resultMap id="curTeaType" type="course">
+		<id property="cur_teacher_id" column="cur_teacher_info_id" />
+		<result property="cur_name" column="cur_name" />
+		<result property="cur_id" column="cur_id" />
+		<result property="teacher.teacher_id" column="teacher_id" />
+		<result property="teacher.teacher_name" column="teacher_name" />
+		<result property="teacher.teacher_phone" column="teacher_phone" />
+	</resultMap>
+
+
+
+
+
+
+
+</mapper>
